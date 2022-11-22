@@ -90,3 +90,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    pop, _, _ = main()
+    expr = tools.selBest(pop, 1)[0]
+    tree = gp.PrimitiveTree(expr)
+    print(str(tree))
