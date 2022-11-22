@@ -63,7 +63,7 @@ def evalSymbReg(individual):
     # Transform the tree expression in a callable function
     func = toolbox.compile(expr=individual)
     # Evaluate the sum of squared difference between the expression
-    # and the real function values : x**4 + x**3 + x**2 + x 
+    # and the real function values : x**4 + x**3 + x**2 + x
     diff = numpy.sum((func(samples) - values)**2)
     return diff,
 
@@ -89,4 +89,7 @@ def main():
     return pop, stats, hof
 
 if __name__ == "__main__":
-    main()
+    pop, _, _ = main()
+    expr = tools.selBest(pop, 1)[0]
+    tree = gp.PrimitiveTree(expr)
+    print(str(tree))
