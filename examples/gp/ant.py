@@ -14,35 +14,35 @@
 #    License along with DEAP. If not, see <http://www.gnu.org/licenses/>.
 
 """
-This example is from "John R. Koza. Genetic Programming: On the Programming 
+This example is from "John R. Koza. Genetic Programming: On the Programming
 of Computers by Natural Selection. MIT Press, Cambridge, MA, USA, 1992.".
 
-The problem is called The Artificial Ant Problem. 
+The problem is called The Artificial Ant Problem.
 <http://www.cs.ucl.ac.uk/staff/w.langdon/bloat_csrp-97-29/node2.html>
 
 The goal of this example is to show how to use DEAP and its GP framework with
-with complex system of functions and object. 
+with complex system of functions and object.
 
 Given an AntSimulator ant, this solution should get the 89 pieces of food
 within 543 moves.
-ant.routine = ant.if_food_ahead(ant.move_forward, prog3(ant.turn_left, 
-                                                  prog2(ant.if_food_ahead(ant.move_forward, ant.turn_right), 
+ant.routine = ant.if_food_ahead(ant.move_forward, prog3(ant.turn_left,
+                                                  prog2(ant.if_food_ahead(ant.move_forward, ant.turn_right),
                                                         prog2(ant.turn_right, prog2(ant.turn_left, ant.turn_right))),
                                                   prog2(ant.if_food_ahead(ant.move_forward, ant.turn_left), ant.move_forward)))
 
 Best solution found with DEAP:
-prog3(prog3(move_forward, 
-            turn_right, 
+prog3(prog3(move_forward,
+            turn_right,
             if_food_ahead(if_food_ahead(prog3(move_forward,
-                                              move_forward, 
-                                              move_forward), 
-                                        prog2(turn_left, 
-                                              turn_right)), 
-                          turn_left)), 
-      if_food_ahead(turn_left, 
-                    turn_left), 
-      if_food_ahead(move_forward, 
-                    turn_right)) 
+                                              move_forward,
+                                              move_forward),
+                                        prog2(turn_left,
+                                              turn_right)),
+                          turn_left)),
+      if_food_ahead(turn_left,
+                    turn_left),
+      if_food_ahead(move_forward,
+                    turn_right))
 fitness = (89,)
 """
 
@@ -63,10 +63,10 @@ def progn(*args):
     for arg in args:
         arg()
 
-def prog2(out1, out2): 
+def prog2(out1, out2):
     return partial(progn,out1,out2)
 
-def prog3(out1, out2, out3):     
+def prog3(out1, out2, out3):
     return partial(progn,out1,out2,out3)
 
 def if_then_else(condition, out1, out2):
@@ -84,10 +84,10 @@ class AntSimulator(object):
         self.routine = None
 
     def _reset(self):
-        self.row = self.row_start 
-        self.col = self.col_start 
+        self.row = self.row_start
+        self.col = self.col_start
         self.dir = 1
-        self.moves = 0  
+        self.moves = 0
         self.eaten = 0
         self.matrix_exc = copy.deepcopy(self.matrix)
 
@@ -95,14 +95,14 @@ class AntSimulator(object):
     def position(self):
         return (self.row, self.col, self.direction[self.dir])
 
-    def turn_left(self): 
+    def turn_left(self):
         if self.moves < self.max_moves:
             self.moves += 1
             self.dir = (self.dir - 1) % 4
 
     def turn_right(self):
         if self.moves < self.max_moves:
-            self.moves += 1    
+            self.moves += 1
             self.dir = (self.dir + 1) % 4
 
     def move_forward(self):
@@ -116,7 +116,7 @@ class AntSimulator(object):
 
     def sense_food(self):
         ahead_row = (self.row + self.dir_row[self.dir]) % self.matrix_row
-        ahead_col = (self.col + self.dir_col[self.dir]) % self.matrix_col        
+        ahead_col = (self.col + self.dir_col[self.dir]) % self.matrix_col
         return self.matrix_exc[ahead_row][ahead_col] == "food"
 
     def if_food_ahead(self, out1, out2):
@@ -199,5 +199,7 @@ def main():
     return pop, hof, stats
 
 if __name__ == "__main__":
-    main()
-
+    pop, _, _ = main()
+    expr = tools.selBest(pop, 1)[0]
+    tree = gp.PrimitiveTree(expr)
+    print(str(tree))
